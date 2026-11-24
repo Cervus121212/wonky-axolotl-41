@@ -26,6 +26,7 @@ LINE = (
     "is a guardrail, and the guardrail is a single regex."
 )
 MAX_CHARS = 200
+ENTRY_FILENAME = "entry.txt"
 
 
 def fail(message):
@@ -43,6 +44,8 @@ def main():
         fail("line must not start or end with whitespace")
     if "  " in LINE:
         fail("line must not contain a double space")
+    if any(ord(ch) > 127 for ch in LINE):
+        fail("line must be plain ASCII")
     if not LINE.endswith("."):
         fail("line must end with a full stop")
     if len(LINE.encode("utf-8")) > MAX_CHARS:
@@ -53,7 +56,7 @@ def main():
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.umask(0o022)
     os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "entry.txt")
+    path = os.path.join(out_dir, ENTRY_FILENAME)
     data = LINE.encode("utf-8")
     with open(path, "wb") as handle:
         handle.write(data)
